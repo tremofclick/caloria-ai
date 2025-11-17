@@ -7,12 +7,14 @@ import { User, DailySummary } from '@/lib/types';
 import { formatDate } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Plus, Droplets, Dumbbell, Weight, Settings, TrendingUp, Sparkles } from 'lucide-react';
+import { Plus, Droplets, Dumbbell, Weight, Settings, TrendingUp, Sparkles, Camera, Barcode, Lock, Crown, X } from 'lucide-react';
 import Link from 'next/link';
 
 export default function DashboardPage() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [upgradeFeature, setUpgradeFeature] = useState('');
   const [summary, setSummary] = useState<DailySummary>({
     date: formatDate(new Date()),
     calories: 0,
@@ -59,6 +61,13 @@ export default function DashboardPage() {
     });
   }, [router]);
 
+  const handlePremiumFeatureClick = (feature: string) => {
+    if (user?.tipo_plano === 'free') {
+      setUpgradeFeature(feature);
+      setShowUpgradeModal(true);
+    }
+  };
+
   if (!user) return null;
 
   const calorieProgress = (summary.calories / user.dailyCalorieGoal) * 100;
@@ -96,12 +105,12 @@ export default function DashboardPage() {
       <main className="container mx-auto px-4 py-6 space-y-6 pb-24">
         {/* Upgrade Banner for Free Users */}
         {user.tipo_plano === 'free' && (
-          <Link href="/plans">
+          <Link href="/#plans">
             <div className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-3xl p-6 text-white cursor-pointer hover:opacity-90 transition-opacity">
               <div className="flex items-center justify-between">
                 <div className="space-y-2">
                   <h3 className="text-xl font-bold">Desbloqueie recursos Premium</h3>
-                  <p className="text-white/90">Sugestões de IA, gráficos avançados e muito mais</p>
+                  <p className="text-white/90">Tire fotos, leia códigos de barras e muito mais</p>
                 </div>
                 <Button className="bg-white text-purple-600 hover:bg-gray-100">
                   Ver Planos
@@ -110,6 +119,59 @@ export default function DashboardPage() {
             </div>
           </Link>
         )}
+
+        {/* Premium Features - Camera & Barcode */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div 
+            onClick={() => handlePremiumFeatureClick('Tirar foto de alimentos')}
+            className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all cursor-pointer relative overflow-hidden group"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center">
+                <Camera className="w-6 h-6 text-white" />
+              </div>
+              <div className="flex-1">
+                <p className="text-lg font-bold text-gray-900 dark:text-white">Tirar Foto</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Reconhecimento automático</p>
+              </div>
+              {user.tipo_plano === 'free' && (
+                <Lock className="w-5 h-5 text-purple-500" />
+              )}
+            </div>
+            {user.tipo_plano === 'free' && (
+              <div className="absolute top-2 right-2">
+                <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                  PREMIUM
+                </span>
+              </div>
+            )}
+          </div>
+
+          <div 
+            onClick={() => handlePremiumFeatureClick('Ler código de barras')}
+            className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all cursor-pointer relative overflow-hidden group"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-cyan-500 rounded-xl flex items-center justify-center">
+                <Barcode className="w-6 h-6 text-white" />
+              </div>
+              <div className="flex-1">
+                <p className="text-lg font-bold text-gray-900 dark:text-white">Código de Barras</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Escaneie produtos</p>
+              </div>
+              {user.tipo_plano === 'free' && (
+                <Lock className="w-5 h-5 text-purple-500" />
+              )}
+            </div>
+            {user.tipo_plano === 'free' && (
+              <div className="absolute top-2 right-2">
+                <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                  PREMIUM
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
 
         {/* Calorie Ring */}
         <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-lg p-6">
@@ -305,6 +367,81 @@ export default function DashboardPage() {
           </div>
         </div>
       </nav>
+
+      {/* Upgrade Modal */}
+      {showUpgradeModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-3xl max-w-lg w-full p-8 relative animate-in fade-in zoom-in duration-200">
+            <button
+              onClick={() => setShowUpgradeModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+            >
+              <X className="w-6 h-6" />
+            </button>
+
+            <div className="text-center space-y-6">
+              <div className="flex justify-center">
+                <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+                  <Crown className="w-10 h-10 text-white" />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+                  Recurso Premium
+                </h2>
+                <p className="text-gray-600 dark:text-gray-400">
+                  <strong>{upgradeFeature}</strong> está disponível apenas para assinantes.
+                </p>
+              </div>
+
+              <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-2xl p-6 space-y-3">
+                <h3 className="font-bold text-gray-900 dark:text-white">
+                  Desbloqueie agora e tenha acesso a:
+                </h3>
+                <ul className="text-left space-y-2 text-gray-700 dark:text-gray-300">
+                  <li className="flex items-start gap-2">
+                    <Camera className="w-5 h-5 text-purple-500 flex-shrink-0 mt-0.5" />
+                    <span>Reconhecimento de alimentos por foto</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Barcode className="w-5 h-5 text-purple-500 flex-shrink-0 mt-0.5" />
+                    <span>Leitura de códigos de barras</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Sparkles className="w-5 h-5 text-purple-500 flex-shrink-0 mt-0.5" />
+                    <span>Sugestões personalizadas com IA</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <TrendingUp className="w-5 h-5 text-purple-500 flex-shrink-0 mt-0.5" />
+                    <span>Gráficos avançados de progresso</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="space-y-3">
+                <Link href="/#plans" onClick={() => setShowUpgradeModal(false)}>
+                  <Button className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white py-6 rounded-xl font-semibold text-lg shadow-lg hover:scale-105 transition-all">
+                    <Sparkles className="w-5 h-5 mr-2" />
+                    Ver Planos e Fazer Upgrade
+                  </Button>
+                </Link>
+                
+                <button
+                  onClick={() => setShowUpgradeModal(false)}
+                  className="w-full text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 py-2"
+                >
+                  Continuar com plano gratuito
+                </button>
+              </div>
+
+              <p className="text-xs text-gray-500 dark:text-gray-500">
+                💎 Planos a partir de R$ 7,90/semana
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

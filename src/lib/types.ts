@@ -1,142 +1,154 @@
-// Tipos do Caloria AI
-
-export type Goal = 'lose' | 'maintain' | 'gain';
-export type ActivityLevel = 'sedentary' | 'light' | 'moderate' | 'active' | 'very_active';
-export type Gender = 'male' | 'female' | 'other';
-export type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack';
-export type ExerciseType = 'cardio' | 'strength' | 'flexibility' | 'sports' | 'other';
-export type SuggestionType = 'diet' | 'water' | 'exercise';
-export type SuggestionStatus = 'new' | 'read';
+// Tipos de planos disponíveis
 export type PlanType = 'free' | 'basico' | 'premium' | 'elite';
+
+// Status da assinatura
 export type SubscriptionStatus = 'ativo' | 'inativo' | 'trial';
 
+// Interface do usuário com dados de assinatura
 export interface User {
   id: string;
-  name: string;
   email: string;
-  gender: Gender;
-  birthDate: string;
-  height: number; // cm
-  currentWeight: number; // kg
-  targetWeight?: number; // kg
-  goal: Goal;
-  activityLevel: ActivityLevel;
-  dailyCalorieGoal: number;
-  dailyProteinGoal: number; // g
-  dailyCarbGoal: number; // g
-  dailyFatGoal: number; // g
-  dailyWaterGoal: number; // ml
-  darkMode: boolean;
-  unitSystem: 'metric' | 'imperial';
-  notifications: boolean;
-  integrations: string[];
-  // Campos de assinatura
+  name: string;
   tipo_plano: PlanType;
   status_assinatura: SubscriptionStatus;
   stripe_customer_id?: string;
   stripe_subscription_id?: string;
-  createdAt: string;
+  created_at: Date;
+  updated_at: Date;
 }
 
-export interface Food {
-  id: string;
+// Configuração de recursos por plano
+export interface PlanFeatures {
+  maxPhotosPerDay: number | 'unlimited';
+  foodDatabase: 'basic' | 'advanced' | 'complete';
+  aiRecognition: 'basic' | 'advanced' | 'premium';
+  personalizedPlans: boolean;
+  macroAnalysis: boolean;
+  detailedReports: boolean;
+  prioritySupport: boolean;
+  noAds: boolean;
+  aiConsulting: boolean;
+  wearableIntegration: boolean;
+  advancedGoals: boolean;
+  customRecipes: boolean;
+  exclusiveCommunity: boolean;
+  earlyAccess: boolean;
+  apiAccess: boolean;
+}
+
+// Mapeamento de recursos por tipo de plano
+export const PLAN_FEATURES: Record<PlanType, PlanFeatures> = {
+  free: {
+    maxPhotosPerDay: 10,
+    foodDatabase: 'basic',
+    aiRecognition: 'basic',
+    personalizedPlans: false,
+    macroAnalysis: false,
+    detailedReports: false,
+    prioritySupport: false,
+    noAds: false,
+    aiConsulting: false,
+    wearableIntegration: false,
+    advancedGoals: false,
+    customRecipes: false,
+    exclusiveCommunity: false,
+    earlyAccess: false,
+    apiAccess: false,
+  },
+  basico: {
+    maxPhotosPerDay: 'unlimited',
+    foodDatabase: 'advanced',
+    aiRecognition: 'advanced',
+    personalizedPlans: false,
+    macroAnalysis: true,
+    detailedReports: false,
+    prioritySupport: true,
+    noAds: true,
+    aiConsulting: false,
+    wearableIntegration: false,
+    advancedGoals: false,
+    customRecipes: false,
+    exclusiveCommunity: false,
+    earlyAccess: false,
+    apiAccess: false,
+  },
+  premium: {
+    maxPhotosPerDay: 'unlimited',
+    foodDatabase: 'complete',
+    aiRecognition: 'premium',
+    personalizedPlans: true,
+    macroAnalysis: true,
+    detailedReports: true,
+    prioritySupport: true,
+    noAds: true,
+    aiConsulting: false,
+    wearableIntegration: false,
+    advancedGoals: false,
+    customRecipes: true,
+    exclusiveCommunity: false,
+    earlyAccess: false,
+    apiAccess: false,
+  },
+  elite: {
+    maxPhotosPerDay: 'unlimited',
+    foodDatabase: 'complete',
+    aiRecognition: 'premium',
+    personalizedPlans: true,
+    macroAnalysis: true,
+    detailedReports: true,
+    prioritySupport: true,
+    noAds: true,
+    aiConsulting: true,
+    wearableIntegration: true,
+    advancedGoals: true,
+    customRecipes: true,
+    exclusiveCommunity: true,
+    earlyAccess: true,
+    apiAccess: true,
+  },
+};
+
+// Informações dos planos para exibição
+export interface PlanInfo {
+  type: PlanType;
   name: string;
-  brand?: string;
-  category: string;
-  servingSize: number;
-  servingUnit: string;
-  calories: number;
-  protein: number;
-  carbs: number;
-  fat: number;
-  barcode?: string;
-  isCustom: boolean;
-  userId?: string;
-  createdAt: string;
+  price: string;
+  period: string;
+  description: string;
+  stripeLink: string;
 }
 
-export interface MealItem {
-  id: string;
-  foodId: string;
-  food: Food;
-  quantity: number;
-  unit: string;
-  calories: number;
-  protein: number;
-  carbs: number;
-  fat: number;
-}
-
-export interface Meal {
-  id: string;
-  userId: string;
-  date: string;
-  time: string;
-  type: MealType;
-  items: MealItem[];
-  totalCalories: number;
-  totalProtein: number;
-  totalCarbs: number;
-  totalFat: number;
-  imageUrl?: string;
-  notes?: string;
-  createdAt: string;
-}
-
-export interface WaterLog {
-  id: string;
-  userId: string;
-  date: string;
-  amount: number; // ml
-  time: string;
-  createdAt: string;
-}
-
-export interface Exercise {
-  id: string;
-  userId: string;
-  type: ExerciseType;
-  name: string;
-  duration: number; // minutes
-  caloriesBurned: number;
-  date: string;
-  time: string;
-  source: 'manual' | 'imported';
-  createdAt: string;
-}
-
-export interface WeightLog {
-  id: string;
-  userId: string;
-  date: string;
-  weight: number; // kg
-  waist?: number; // cm
-  hips?: number; // cm
-  chest?: number; // cm
-  arms?: number; // cm
-  thighs?: number; // cm
-  notes?: string;
-  createdAt: string;
-}
-
-export interface AISuggestion {
-  id: string;
-  userId: string;
-  date: string;
-  text: string;
-  type: SuggestionType;
-  status: SuggestionStatus;
-  createdAt: string;
-}
-
-export interface DailySummary {
-  date: string;
-  calories: number;
-  protein: number;
-  carbs: number;
-  fat: number;
-  water: number;
-  exerciseCalories: number;
-  mealsCount: number;
-  exercisesCount: number;
-}
+export const PLANS_INFO: PlanInfo[] = [
+  {
+    type: 'free',
+    name: 'Gratuito',
+    price: 'R$ 0',
+    period: '/mês',
+    description: 'Perfeito para começar sua jornada',
+    stripeLink: '',
+  },
+  {
+    type: 'basico',
+    name: 'Semanal (Básico)',
+    price: 'R$ 7,90',
+    period: '/semana',
+    description: 'Experimente o poder da IA',
+    stripeLink: 'https://buy.stripe.com/6oUaEX7GS6yn8Xqfatg3602',
+  },
+  {
+    type: 'premium',
+    name: 'Mensal (Premium)',
+    price: 'R$ 19,90',
+    period: '/mês',
+    description: 'Para quem leva saúde a sério',
+    stripeLink: 'https://buy.stripe.com/7sY4gz8KWaOD5Le0fzg3601',
+  },
+  {
+    type: 'elite',
+    name: 'Anual (ELITE)',
+    price: 'R$ 118,90',
+    period: '/ano',
+    description: 'O investimento mais inteligente',
+    stripeLink: 'https://buy.stripe.com/cNidR91iu9Kz1uY6DXg3603',
+  },
+];
